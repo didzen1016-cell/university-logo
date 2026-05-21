@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>大学校徽馆 · 相册上传版</title>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f7f7f5;
+      color: #222;
+    }
+    .app {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 18px 14px 48px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+    .subtitle {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #777;
+    }
+    .panel {
+      margin: 14px 0;
+      padding: 12px;
+      border: 1px solid #e7e7e3;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.86);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.045);
+      backdrop-filter: blur(18px);
+    }
+    input, select {
+      width: 100%;
+      border: 1px solid #e5e5e1;
+      outline: none;
+      border-radius: 13px;
+      padding: 11px 12px;
+      font-size: 13px;
+      background: #fff;
+      color: #222;
+    }
+    .search {
+      border: none;
+      background: #f0f0ed;
+      font-size: 14px;
+    }
+    .form {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .file-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 92px;
+      border: 1px dashed #d8d8d3;
+      border-radius: 16px;
+      background: #fafaf8;
+      color: #777;
+      font-size: 13px;
+      text-align: center;
+      padding: 12px;
+      overflow: hidden;
+    }
+    .file-label img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid #eee;
+      padding: 6px;
+    }
+    #file { display: none; }
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 11px 12px;
+      font-size: 13px;
+      background: #222;
+      color: white;
+      cursor: pointer;
+    }
+    .ghost {
+      background: #efefec;
+      color: #555;
+    }
+    .muted {
+      font-size: 11px;
+      color: #888;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+    .tools {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .tools button { flex: 1; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .card {
+      position: relative;
+      min-width: 0;
+      padding: 12px 7px 10px;
+      border: 1px solid #e7e7e3;
+      border-radius: 19px;
+      background: #fff;
+      text-align: center;
+      box-shadow: 0 7px 18px rgba(0,0,0,0.035);
+    }
+    .logo-wrap {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 7px;
+      border-radius: 50%;
+      background: #fafafa;
+      border: 1px solid #e3e3df;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .logo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 6px;
+    }
+    .fallback {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 650;
+      color: #555;
+      background: #f4f4f2;
+    }
+    .name {
+      font-size: 11px;
+      font-weight: 550;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .region {
+      margin-top: 3px;
+      font-size: 10px;
+      color: #999;
+    }
+    .mini-actions {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      display: flex;
+      gap: 3px;
+    }
+    .mini-actions button {
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      font-size: 12px;
+      background: #f1f1ef;
+      color: #999;
+    }
+    .empty {
+      margin-top: 42px;
+      text-align: center;
+      font-size: 13px;
+      color: #aaa;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #171717; color: #eee; }
+      .panel, .card { background: #222; border-color: #333; }
+      input, select { background: #1b1b1b; color: #eee; border-color: #333; }
+      .search, .ghost, .mini-actions button { background: #2d2d2d; color: #bbb; }
+      .file-label, .logo-wrap, .fallback { background: #1b1b1b; border-color: #333; color: #aaa; }
+      .subtitle, .muted, .region { color: #888; }
+      button { background: #eee; color: #111; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>大学校徽馆</h1>
+      <div class="subtitle">相册上传版 · 每行三个 · 本地自动保存</div>
+    </header>
+
+    <section class="panel">
+      <input id="search" class="search" placeholder="搜索大学 / 地区" />
+
+      <div class="form">
+        <div class="row">
+          <input id="name" placeholder="大学名称" />
+          <input id="region" placeholder="地区 / 分类" />
+        </div>
+
+        <label class="file-label" for="file" id="fileLabel">
+          点这里从相册选择校徽图片
+        </label>
+        <input id="file" type="file" accept="image/*" />
+
+        <button onclick="saveUniversity()">添加大学</button>
+      </div>
+
+      <div class="tools">
+        <button class="ghost" onclick="exportData()">导出</button>
+        <button class="ghost" onclick="importData()">导入</button>
+        <button class="ghost" onclick="resetForm()">清空输入</button>
+      </div>
+
+      <div class="muted">
+        图片会压缩后保存在当前浏览器里，不需要联网。换手机、清除浏览器数据或换浏览器可能会丢失，所以重要数据建议偶尔点“导出”备份。
+      </div>
+    </section>
+
+    <section id="grid" class="grid"></section>
+    <div id="empty" class="empty" style="display:none;">还没有找到对应大学</div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "university_logo_gallery_upload_v2";
+    let editingIndex = null;
+    let selectedImage = "";
+
+    const defaultData = [
+      { name: "北京大学", region: "中国", image: "" },
+      { name: "清华大学", region: "中国", image: "" },
+      { name: "复旦大学", region: "中国", image: "" },
+      { name: "浙江大学", region: "中国", image: "" },
+      { name: "哈佛大学", region: "美国", image: "" },
+      { name: "东京大学", region: "日本", image: "" }
+    ];
+
+    let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || defaultData;
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function shortName(name) {
+      if (!name) return "校";
+      const english = name.match(/[A-Za-z]/g);
+      if (english && english.length >= 2) return english.slice(0, 3).join("").toUpperCase();
+      return name.replace(/大学|学院|学校/g, "").slice(0, 2);
+    }
+
+    function compressImage(file, callback) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement("canvas");
+          const size = 420;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, size, size);
+
+          const scale = Math.min(size / img.width, size / img.height) * 0.9;
+          const w = img.width * scale;
+          const h = img.height * scale;
+          const x = (size - w) / 2;
+          const y = (size - h) / 2;
+
+          ctx.drawImage(img, x, y, w, h);
+          callback(canvas.toDataURL("image/jpeg", 0.82));
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById("file").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      compressImage(file, function(dataUrl) {
+        selectedImage = dataUrl;
+        document.getElementById("fileLabel").innerHTML = `<img src="${selectedImage}" alt="已选择的校徽" />`;
+      });
+    });
+
+    function render() {
+      const grid = document.getElementById("grid");
+      const empty = document.getElementById("empty");
+      const query = document.getElementById("search").value.trim().toLowerCase();
+
+      const filtered = data
+        .map((item, index) => ({ ...item, realIndex: index }))
+        .filter(item =>
+          item.name.toLowerCase().includes(query) ||
+          item.region.toLowerCase().includes(query)
+        );
+
+      grid.innerHTML = filtered.map(item => {
+        const logo = item.image
+          ? `<img src="${item.image}" alt="${item.name}校徽" />`
+          : `<div class="fallback">${shortName(item.name)}</div>`;
+
+        return `
+          <article class="card">
+            <div class="mini-actions">
+              <button onclick="editUniversity(${item.realIndex})">改</button>
+              <button onclick="deleteUniversity(${item.realIndex})">×</button>
+            </div>
+            <div class="logo-wrap">${logo}</div>
+            <div class="name" title="${item.name}">${item.name}</div>
+            <div class="region">${item.region || "未分类"}</div>
+          </article>
+        `;
+      }).join("");
+
+      empty.style.display = filtered.length ? "none" : "block";
+    }
+
+    function saveUniversity() {
+      const name = document.getElementById("name").value.trim();
+      const region = document.getElementById("region").value.trim() || "未分类";
+
+      if (!name) {
+        alert("宝宝，大学名称不能为空哦");
+        return;
+      }
+
+      const item = { name, region, image: selectedImage };
+
+      if (editingIndex !== null) {
+        if (!selectedImage && data[editingIndex].image) {
+          item.image = data[editingIndex].image;
+        }
+        data[editingIndex] = item;
+      } else {
+        data.unshift(item);
+      }
+
+      save();
+      resetForm();
+      render();
+    }
+
+    function editUniversity(index) {
+      editingIndex = index;
+      document.getElementById("name").value = data[index].name;
+      document.getElementById("region").value = data[index].region;
+      selectedImage = data[index].image || "";
+      document.getElementById("fileLabel").innerHTML = selectedImage
+        ? `<img src="${selectedImage}" alt="当前校徽" />`
+        : "点这里从相册选择校徽图片";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function deleteUniversity(index) {
+      if (confirm("确定删除这个大学吗？")) {
+        data.splice(index, 1);
+        save();
+        render();
+      }
+    }
+
+    function resetForm() {
+      editingIndex = null;
+      selectedImage = "";
+      document.getElementById("name").value = "";
+      document.getElementById("region").value = "";
+      document.getElementById("file").value = "";
+      document.getElementById("fileLabel").innerHTML = "点这里从相册选择校徽图片";
+    }
+
+    function exportData() {
+      prompt("复制下面的数据，之后可导入恢复：", JSON.stringify(data));
+    }
+
+    function importData() {
+      const text = prompt("把之前导出的数据粘贴到这里：");
+      if (!text) return;
+      try {
+        const imported = JSON.parse(text);
+        if (!Array.isArray(imported)) throw new Error();
+        data = imported;
+        save();
+        resetForm();
+        render();
+      } catch {
+        alert("数据格式不对，导入失败啦");
+      }
+    }
+
+    document.getElementById("search").addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>
